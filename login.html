@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cost Assembler</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💰</text></svg>">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--container-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .login-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .user-btn {
+            padding: 15px 10px;
+            background: var(--person-item-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .user-btn:hover {
+            background: var(--admin-item-hover);
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .user-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .theme-toggle {
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .theme-toggle .material-icons {
+            font-size: 24px;
+        }
+
+        .password-section {
+            display: none;
+        }
+
+        .password-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .password-input-wrapper input {
+            width: 100%;
+            padding: 12px 45px 12px 12px;
+            margin-bottom: 20px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 14px;
+            letter-spacing: 1px;
+            line-height: 1.5;
+            height: 48px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toggle-password .material-icons {
+            font-size: 20px;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-primary);
+        }
+
+        .info-box {
+            padding: 15px;
+            background: rgba(255, 193, 7, 0.15);
+            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .error-box {
+            padding: 15px;
+            background: rgba(220, 53, 69, 0.15);
+            border-left: 4px solid #dc3545;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #dc3545;
+            display: none;
+        }
+
+        .error-box.active {
+            display: block;
+        }
+
+        .success-box {
+            padding: 15px;
+            background: rgba(40, 167, 69, 0.15);
+            border-left: 4px solid #28a745;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #28a745;
+            display: none;
+        }
+
+        .success-box.active {
+            display: block;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <h1><span class="material-icons" style="vertical-align: middle; font-size: 36px;">account_balance_wallet</span> Cost Assembler</h1>
+                        <p>Bitte wählen Sie Ihren Account aus</p>
+                    </div>
+                    <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" title="Design wechseln">
+                        <span class="material-icons">light_mode</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="errorBox" class="error-box"></div>
+            <div id="successBox" class="success-box"></div>
+
+            <!-- Schritt 1: Benutzer auswählen -->
+            <div id="userSelection">
+                <div class="user-grid" id="userGrid">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+            </div>
+
+            <!-- Schritt 2: Passwort eingeben oder erstellen -->
+            <div id="passwordSection" class="password-section">
+                <button onclick="backToUserSelection()" class="login-btn back-btn">
+                    ← Zurück zur Benutzerauswahl
+                </button>
+
+                <div id="newPasswordForm" style="display: none;">
+                    <div class="info-box" style="margin-bottom: 20px;">
+                        <strong>🔐 Ersteinrichtung</strong><br>
+                        Für diesen Account wurde noch kein Passwort vergeben. Bitte erstellen Sie ein neues Passwort.
+                    </div>
+
+                                        <div class="form-group">
+                        <label for="newPassword">Passwort festlegen:</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="newPassword" placeholder="Mindestens 4 Zeichen">
+                            <button class="toggle-password" onclick="togglePassword('newPassword')" type="button"><span class="material-icons">visibility</span></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Passwort bestätigen:</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="confirmPassword" placeholder="Passwort wiederholen">
+                            <button class="toggle-password" onclick="togglePassword('confirmPassword')" type="button"><span class="material-icons">visibility</span></button>
+                        </div>
+                    </div>
+
+                    <button onclick="setNewPassword()" class="login-btn">
+                        <span class="material-icons" style="vertical-align: middle;">lock</span> Passwort erstellen
+                    </button>
+                </div>
+
+                <div id="loginForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="password">Passwort eingeben:</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="password" placeholder="Ihr Passwort">
+                            <button class="toggle-password" onclick="togglePassword('password')" type="button"><span class="material-icons">visibility</span></button>
+                        </div>
+                    </div>
+
+                    <button onclick="login()" class="login-btn">
+                        <span class="material-icons" style="vertical-align: middle;">login</span> Anmelden
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedUsername = null;
+
+        // Lade verfügbare Benutzer
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                
+                const userGrid = document.getElementById('userGrid');
+                userGrid.innerHTML = users.map(user => `
+                    <button class="user-btn" onclick="selectUser('${user.username}')">
+                        <span class="material-icons" style="vertical-align: middle;">person</span> ${user.username}
+                    </button>
+                `).join('');
+            } catch (error) {
+                showError('Fehler beim Laden der Benutzer');
+            }
+        }
+
+        // Benutzer auswählen
+        async function selectUser(username) {
+            selectedUsername = username;
+            
+            // Visuelle Auswahl
+            document.querySelectorAll('.user-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            try {
+                const response = await fetch('/api/check-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+
+                const data = await response.json();
+
+                // Zeige Passwort-Sektion
+                document.getElementById('userSelection').style.display = 'none';
+                document.getElementById('passwordSection').classList.add('active');
+
+                if (data.hasPassword) {
+                    document.getElementById('loginForm').style.display = 'block';
+                    document.getElementById('newPasswordForm').style.display = 'none';
+                    document.getElementById('password').focus();
+                } else {
+                    document.getElementById('newPasswordForm').style.display = 'block';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('newPassword').focus();
+                }
+            } catch (error) {
+                showError('Fehler beim Prüfen des Benutzers');
+            }
+        }
+
+        // Zurück zur Benutzerauswahl
+        function backToUserSelection() {
+            document.getElementById('userSelection').style.display = 'block';
+            document.getElementById('passwordSection').classList.remove('active');
+            selectedUsername = null;
+            clearMessages();
+            clearPasswords();
+        }
+
+        // Neues Passwort setzen
+        async function setNewPassword() {
+            const password = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            clearMessages();
+
+            if (password.length < 4) {
+                showError('Passwort muss mindestens 4 Zeichen lang sein');
+                return;
+            }
+
+            if (password !== confirm) {
+                showError('Passwörter stimmen nicht überein');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/set-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        username: selectedUsername, 
+                        password 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Passwort erfolgreich erstellt! Sie werden weitergeleitet...');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showError(data.error || 'Fehler beim Erstellen des Passworts');
+                }
+            } catch (error) {
+                showError('Serverfehler');
+            }
+        }
+
+        // Login
+        async function login() {
+            const password = document.getElementById('password').value;
+            clearMessages();
+
+            if (!password) {
+                showError('Bitte Passwort eingeben');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        username: selectedUsername, 
+                        password 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Erfolgreich angemeldet! Sie werden weitergeleitet...');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    showError(data.error || 'Ungültige Anmeldedaten');
+                    document.getElementById('password').value = '';
+                }
+            } catch (error) {
+                showError('Serverfehler');
+            }
+        }
+
+        // Passwort anzeigen/verbergen
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const btn = event.target.closest('button');
+            const icon = btn.querySelector('.material-icons');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+
+        // Hilfsfunktionen
+        function showError(message) {
+            const errorBox = document.getElementById('errorBox');
+            errorBox.textContent = message;
+            errorBox.classList.add('active');
+        }
+
+        function showSuccess(message) {
+            const successBox = document.getElementById('successBox');
+            successBox.textContent = message;
+            successBox.classList.add('active');
+        }
+
+        function clearMessages() {
+            document.getElementById('errorBox').classList.remove('active');
+            document.getElementById('successBox').classList.remove('active');
+        }
+
+        function clearPasswords() {
+            document.getElementById('password').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // Enter-Taste Support
+        // Theme Management (gleiche Funktionen wie in script.js)
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeToggle .material-icons');
+            if (icon) {
+                icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            loadUsers();
+
+            document.getElementById('password')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+
+            document.getElementById('confirmPassword')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') setNewPassword();
+            });
+        });
+    </script>
+</body>
+</html>

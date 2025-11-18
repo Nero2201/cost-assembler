@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Assembler</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💰</text></svg>">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1><span class="material-icons" style="vertical-align: middle; font-size: 36px;">account_balance_wallet</span> Cost Assembler</h1>
+                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" title="Design wechseln">
+                    <span class="material-icons">light_mode</span>
+                </button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <span id="currentUser" onclick="openProfileModal()" style="font-size: 16px; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: all 0.3s ease;"><span class="material-icons" style="vertical-align: middle; font-size: 20px;">person</span> Laden...</span>
+                <button onclick="logout()" style="padding: 8px 16px; font-size: 14px;"><span class="material-icons" style="vertical-align: middle; font-size: 18px;">logout</span> Abmelden</button>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="ausgaben"><span class="material-icons" style="vertical-align: middle;">receipt</span> Ausgaben</button>
+            <button class="tab-btn" data-tab="uebersicht"><span class="material-icons" style="vertical-align: middle;">analytics</span> Übersicht</button>
+            <button class="tab-btn" id="adminTabBtn" data-tab="admin" style="display: none;"><span class="material-icons" style="vertical-align: middle;">settings</span> Admin</button>
+        </nav>
+
+        <!-- Tab: Ausgaben -->
+        <div id="ausgaben" class="tab-content active">
+            <!-- Schnellübersicht -->
+            <div class="card stats-card">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Gesamtausgaben</div>
+                        <div class="stat-value" id="totalSpent">0,00 €</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Pro Person</div>
+                        <div class="stat-value" id="perPerson">0,00 €</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Anzahl Ausgaben</div>
+                        <div class="stat-value" id="totalCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Neue Ausgabe</h2>
+                <div class="ausgabe-form">
+                    <input type="text" id="ausgabeBeschreibung" placeholder="Beschreibung (z.B. Restaurant)">
+                    <input type="text" id="ausgabeBetrag" placeholder="Betrag in €">
+                    
+                    <div class="form-group">
+                        <label>Bezahlt von:</label>
+                        <select id="bezahltVon">
+                            <option value="">Bitte Person auswählen</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ausgabe für:</label>
+                        <div id="ausgabeFuerCheckboxes" class="checkbox-group"></div>
+                    </div>
+
+                    <button onclick="addAusgabe()" class="btn-primary"><span class="material-icons" style="vertical-align: middle;">add_circle</span> Ausgabe hinzufügen</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Bisherige Ausgaben</h2>
+                <div id="ausgabenListe" class="ausgaben-liste"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Übersicht -->
+        <div id="uebersicht" class="tab-content">
+            <div class="card">
+                <h2>Gesamtübersicht</h2>
+                <div id="gesamtuebersicht" class="gesamtuebersicht"></div>
+            </div>
+
+            <div class="card">
+                <h2>Ausgleichszahlungen</h2>
+                <div id="ausgleichszahlungen" class="ausgleichszahlungen"></div>
+            </div>
+
+            <div class="card">
+                <h2>Detaillierte Bilanz</h2>
+                <div id="detailBilanz" class="detail-bilanz"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Admin (nur für Admins) -->
+        <div id="admin" class="tab-content">
+            <div class="card">
+                <h2><span class="material-icons" style="vertical-align: middle;">settings</span> Benutzerverwaltung</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">
+                    Alle Benutzer sind automatisch bei der Kostenaufteilung dabei. 
+                    Erstellen Sie neue Benutzer oder verwalten Sie bestehende.
+                </p>
+                
+                <div class="admin-section">
+                    <h3>Neuen Benutzer erstellen</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="newUsername" placeholder="Benutzername">
+                        <select id="newUserRole">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <button onclick="createNewUser()"><span class="material-icons" style="vertical-align: middle;">person_add</span> Benutzer erstellen</button>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h3>Alle Benutzer</h3>
+                    <div id="adminUsersList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nachricht</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+                <div id="modalForm"></div>
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <button onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
