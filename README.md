@@ -140,10 +140,6 @@ splitter/
 - Die Datenbank liegt in `splitter.db`
 - Jeder Benutzer hat seine eigenen isolierten Daten
 
-## 📄 Lizenz
-
-ISC
-
 ## 👨‍💻 Entwicklung
 
 Entwickelt mit ❤️ für einfaches Teilen von Gruppenausgaben.
